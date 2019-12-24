@@ -16,7 +16,7 @@ class App extends Component {
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#0068C4',
-      navigationBarTitleText: 'taro知乎',
+      navigationBarTitleText: 'forest',
       navigationBarTextStyle: 'white',
       enablePullDownRefresh: true
     },
@@ -32,13 +32,13 @@ class App extends Component {
         selectedIconPath: "./asset/images/index_focus.png"
       },{
         pagePath: "pages/discovery/discovery",
-        text: "发现",
+        text: "精选",
         iconPath: "./asset/images/discovery.png",
         selectedIconPath: "./asset/images/discovery_focus.png"
       }, 
       {
         pagePath: "pages/more/more",
-        text: "我的",
+        text: "个人",
         iconPath: "./asset/images/burger.png",
         selectedIconPath: "./asset/images/burger_focus.png"
       }]

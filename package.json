@@ -1,8 +1,8 @@
 {
-	"name": "taro_zhihu",
+	"name": "forest",
 	"version": "1.0.0",
 	"private": true,
-	"description": "taro 练手项目",
+	"description": "forest 前端",
 	"main": "index.js",
 	"scripts": {
 		"build:weapp": "taro build --type weapp",

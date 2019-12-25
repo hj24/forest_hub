@@ -12,14 +12,14 @@ import img6 from '../../asset/images/icon9.jpeg'
 
 export default class Discovery extends Component {
   config = {
-    navigationBarTitleText: '发现'
+    navigationBarTitleText: '精选'
   }
   constructor() {
     super(...arguments)
     this.state = {
       imgUrls: [img1,img2,img3],
       currentNavtab: 0,
-      navTab: ['推荐', '圆桌', '热门', '收藏'],
+      navTab: ['生物', 'CS', '数学', '数学'],
       feed:[
         {
             'question_id': 1,
@@ -139,8 +139,7 @@ export default class Discovery extends Component {
         </View>
         <ScrollView scroll-y className='container discovery withtab'>
           <View className='ctnt0' hidden={this.state.currentNavtab==0 ? false : true}>
-              <Swiper className='activity' indicatorDots='true'
-                      autoplay='true' interval='5000' duration='500'>
+              <Swiper className='activity' indicatorDots='true' autoplay='true' interval='5000' duration='500'>
                 {this.state.imgUrls.map((item,index) => {
                   return (<SwiperItem key={index}>
                     <Image src={item} className='slide-image' width='355' height='375' />

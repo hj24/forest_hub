@@ -64,8 +64,31 @@
       border-bottom: solid 1px #ebebeb;
     }
 
-    &:last-child .myitem-name{
+    .myitem-button{
+      flex: 5;
+      line-height: 60px;
+      padding: 30px 0;
+      border-top: solid 1px #ebebeb;
+      border-bottom: solid 2px #ebebeb;
+
+      .myitem-b{
+        text-align: left;
+        font-size: 34px;
+        color: #6d6d6d;
+        background: #ffffff;
+        padding: 0;
+      }
+      .myitem-b::after{
+        border: none;
+      }
+    }
+
+    &:last-child .myitem-button{
       border-bottom: none;
+    }
+
+    &:first-child .myitem-button{
+      border-top: none;
     }
   }
 }

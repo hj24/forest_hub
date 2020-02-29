@@ -13,7 +13,7 @@ import img6 from '../../asset/images/icon9.jpeg'
 export default class Discovery extends Component {
   config = {
     navigationBarTitleText: '精选'
-  }
+  };
   constructor() {
     super(...arguments)
     this.state = {
@@ -131,14 +131,14 @@ export default class Discovery extends Component {
         <View className='top-tab flex-wrp flex-tab' >
         {
           this.state.navTab.map((item,index) => {
-            return (<View className={this.state.currentNavtab === index ? 'toptab flex-item active' : 'toptab flex-item' } key={index} onClick={this.switchTab.bind(this,index)}>
+            return (<View className={this.state.currentNavtab === index ? 'toptab flex-item active' : 'toptab flex-item'} key={index} onClick={this.switchTab.bind(this,index)}>
               {item}
             </View>)
           })
         }
         </View>
         <ScrollView scroll-y className='container discovery withtab'>
-          <View className='ctnt0' hidden={this.state.currentNavtab==0 ? false : true}>
+          <View className='ctnt0' hidden={this.state.currentNavtab===0 ? false : true}>
               <Swiper className='activity' indicatorDots='true' autoplay='true' interval='5000' duration='500'>
                 {this.state.imgUrls.map((item,index) => {
                   return (<SwiperItem key={index}>
@@ -156,7 +156,8 @@ export default class Discovery extends Component {
                     question={item.question}
                     goodNum={item.good_num}
                     commentNum={item.comment_num}
-                    answerCtnt={item.answer_ctnt} />
+                    answerCtnt={item.answer_ctnt}
+                  />
                 )
               })}
           </View>

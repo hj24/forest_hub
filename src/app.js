@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import Index from './pages/index'
+import Discovery from './pages/discovery/discovery'
 
 import './app.scss'
 
@@ -7,8 +7,8 @@ import './app.scss'
 class App extends Component {
   config = {
     pages: [
-      'pages/index/index',
       'pages/discovery/discovery',
+      'pages/index/index',
       'pages/more/more',
       'pages/answer/answer',
       'pages/question/question',
@@ -27,24 +27,23 @@ class App extends Component {
       backgroundColor: "#FBFBFB",
       borderStyle: "white",
       list: [{
-        pagePath: "pages/index/index",
-        text: "首页",
-        iconPath: "./asset/images/index.png",
-        selectedIconPath: "./asset/images/index_focus.png"
-      },{
         pagePath: "pages/discovery/discovery",
-        text: "精选",
+        text: "首页",
         iconPath: "./asset/images/discovery.png",
         selectedIconPath: "./asset/images/discovery_focus.png"
-      }, 
-      {
+      }, {
+        pagePath: "pages/index/index",
+        text: "收藏",
+        iconPath: "./asset/images/index.png",
+        selectedIconPath: "./asset/images/index_focus.png"
+      }, {
         pagePath: "pages/more/more",
         text: "个人",
         iconPath: "./asset/images/burger.png",
         selectedIconPath: "./asset/images/burger_focus.png"
       }]
     }
-  }
+  };
 
   componentDidMount () {}
 
@@ -56,9 +55,9 @@ class App extends Component {
 
   render () {
     return (
-      <Index />
+      <Discovery />
     )
   }
 }
 
-Taro.render(<App />, document.getElementById('app'))
+Taro.render(<App />, document.getElementById('app'));

@@ -187,7 +187,7 @@ export default class Discovery extends Component {
 
 
   switchTab(index, e) {
-    console.log(e)
+    console.log(e);
     this.setState({
       currentNavtab: index
     })
@@ -265,10 +265,10 @@ export default class Discovery extends Component {
           </View>
 
 
-          <View className='txcenter' hidden={this.state.currentNavtab==2 ? false : true}>
+          <View className='txcenter' hidden={this.state.currentNavtab !== 2}>
             <Text>热门</Text>
           </View>
-          <View className='txcenter' hidden={this.state.currentNavtab==3 ? false : true}>
+          <View className='txcenter' hidden={this.state.currentNavtab !== 3}>
             <Text>收藏</Text>
           </View>
 

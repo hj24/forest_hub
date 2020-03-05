@@ -26,11 +26,15 @@ export default class Discovery extends Component {
     }
   }
 
+  componentDidShow() {
+    this.update();
+  };
+
 
   componentDidMount() {
     //主界面无需关注有没有token直接异步加载两个api
     Taro.showLoading({
-      'title': '初始化'
+      'title': '加载中'
     });
     function init(obj) {
       var r1 = new Promise(function (resolve, reject) {
@@ -40,6 +44,7 @@ export default class Discovery extends Component {
             obj.setState({
               feed: res.data["articles"]
             });
+            Taro.setStorageSync('mainpage0', 1);
             resolve(res.data)
           },
           fail: function (res) {
@@ -58,6 +63,7 @@ export default class Discovery extends Component {
             obj.setState({
               feed2: res.data["articles"]
             });
+            Taro.setStorageSync('mainpage1', 1);
             resolve(res.data)
           },
           fail: function (res) {
@@ -70,18 +76,10 @@ export default class Discovery extends Component {
       });
     }
     init(this);
-
-    Taro.setStorage({
-      key: "mainpage0", data: 1
-    });
-    Taro.setStorage({
-      key: "mainpage1", data: 1
-    });
   }
 
   update = () => {
     function _update(obj, url, idx) {
-      console.log(obj.state);
       Taro.request({
         url: url,
         success: function (res) {
@@ -89,13 +87,11 @@ export default class Discovery extends Component {
             obj.setState({
               feed: res.data["articles"]
             });
-            console.log(obj.state.feed)
           }
           if (idx === 1){
             obj.setState({
               feed2: res.data["articles"]
             });
-            console.log(obj.state.feed2)
           }
         },
         fail: function (res) {
@@ -185,13 +181,13 @@ export default class Discovery extends Component {
     }
   };
 
-
-  switchTab(index, e) {
-    console.log(e);
+  switchTab = (index, e) => {
+    //console.log(e);
     this.setState({
       currentNavtab: index
     })
-  }
+  };
+
   render () {
     return (
       <View>
@@ -225,7 +221,7 @@ export default class Discovery extends Component {
                       key={`dis_${index}`}
                       // feedSourceImg={item.feed_source_img}
                       feedSourceName={item.author ? item["author"].substring(0, 20) + " ...": ""}
-                      //feedSourceTxt={item.feed_source_txt}
+                      idx={item.id}
                       question={item.title}
                       goodNum={item["fav_num"]}
                       commentNum={item["date"]}
@@ -253,6 +249,7 @@ export default class Discovery extends Component {
                     // feedSourceImg={item.feed_source_img}
                     feedSourceName={item.author ? item["author"].substring(0, 20) + " ...": ""}
                     //feedSourceTxt={item.feed_source_txt}
+                    idx={item.id}
                     question={item.title}
                     goodNum={item["fav_num"]}
                     commentNum={item["date"]}

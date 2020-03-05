@@ -22,7 +22,7 @@ export default class More extends Component {
 
     this.state = {
       name:"未登录",
-      desc:"点击进行登录",
+      desc:"点击下方进行授权登录",
       //isLogin: false
       avatar: default_avatar
     }
@@ -54,6 +54,8 @@ export default class More extends Component {
           })
 
         }
+      }).catch(function (e) {
+        console.log("no");
       })
     } catch (e) {
       console.log('exception', e)
@@ -84,107 +86,104 @@ export default class More extends Component {
   navigateTo = (url) => {
     Taro.navigateTo({
       url: url
-    })
+    });
+  };
+
+  switchTo = (url) => {
+    Taro.switchTab({
+      url: url
+    });
   };
 
   processInfo = (info) => {
-    Taro.checkSession({
-      success: function () {
-        Taro.showToast({
-          title: '已登录，无需重复登录',
-          icon: 'none',
-          duration: 2000
-        })
-      },
-      fail: function () {
-        // 如果授权成功，有授权信息
-        if (info.detail.userInfo) {
-          console.log(info.detail.userInfo);
-          // 先清空缓存
-          Taro.clearStorageSync();
-          // 调用login接口获取 code
-          Taro.login({
-            success: function (res) {
-              if (res.code) {
-                //console.log(res.code)
-                // 有code之后带着code和info信息去后端请求token
-                Taro.request({
-                  url: 'https://mambahj.com/login',
-                  method: "POST",
-                  data: {
-                    "user_info": info.detail.userInfo,
-                    "code": res.code
-                  },
-                  header: {
-                    'content-type': 'application/json'
-                  },
-                  success: function (ans) {
-                    console.log(ans.data);
-                    //返回code是24是才是真正登录成功
-                    if (ans.data["code"] === 24) {
-                      Taro.setStorage({key: 'avatar', data: ans.data["avatar"]}).then(()=>{
-                        Taro.setStorage({key: 'nickname', data: ans.data["nickName"]}).then(()=>{
-                          Taro.setStorage({key: 'desc', data: '已成功授权'}).then(()=>{
-                            Taro.setStorage({key: 'accessToken', data: ans.data["accessToken"]}).then(() => {
-                              // 登录成功并且设置缓存之后，重新加载页面
-                              Taro.reLaunch({url: '/pages/more/more'}).then().then(()=>{
-                                Taro.showToast({
-                                  title: ans.data["message"],
-                                  icon: 'none',
-                                  duration: 2000
+    try {
+      Taro.checkSession({
+        success: function () {
+          Taro.showToast({
+            title: '已登录，无需重复登录',
+            icon: 'none',
+            duration: 2000
+          })
+        },
+        fail: function () {
+          // 如果授权成功，有授权信息
+          if (info.detail.userInfo) {
+            // 先清空缓存
+            Taro.clearStorageSync();
+            // 调用login接口获取 code
+            Taro.login({
+              success: function (res) {
+                if (res.code) {
+                  //console.log(res.code)
+                  // 有code之后带着code和info信息去后端请求token
+                  Taro.request({
+                    url: 'https://mambahj.com/login',
+                    method: "POST",
+                    data: {
+                      "user_info": info.detail.userInfo,
+                      "code": res.code
+                    },
+                    header: {
+                      'content-type': 'application/json'
+                    },
+                    success: function (ans) {
+                      //返回code是24是才是真正登录成功
+                      if (ans.data["code"] === 24) {
+                        Taro.setStorage({key: 'avatar', data: ans.data["avatar"]}).then(() => {
+                          Taro.setStorage({key: 'nickname', data: ans.data["nickName"]}).then(() => {
+                            Taro.setStorage({key: 'desc', data: '已成功授权'}).then(() => {
+                              //console.log(ans.data["accessToken"]);
+                              Taro.setStorage({key: 'accessToken', data: ans.data["accessToken"]}).then(() => {
+                                // 登录成功并且设置缓存之后，重新加载页面
+                                Taro.reLaunch({url: '/pages/more/more'}).then().then(() => {
+                                  Taro.showToast({
+                                    title: ans.data["message"],
+                                    icon: 'none',
+                                    duration: 2000
+                                  })
                                 })
                               })
                             })
                           })
                         })
-                      })
-                    } else {
-                      // 其它状态码则失败
+                      } else {
+                        // 其它状态码则失败
+                        Taro.showToast({
+                          title: ans.data["message"],
+                          icon: 'none',
+                          duration: 2000
+                        })
+                      }
+                    },
+                    fail: function (ans) {
+                      //console.log(ans.data);
                       Taro.showToast({
                         title: ans.data["message"],
                         icon: 'none',
                         duration: 2000
                       })
                     }
-                  },
-                  fail: function (ans) {
-                    console.log(ans.data);
-                    Taro.showToast({
-                      title: ans.data["message"],
-                      icon: 'none',
-                      duration: 2000
-                    })
-                  }
-                })
-                // Taro.getUserInfo().then(ans => {
-                //   Taro.setStorage({key: 'avatar', data: ans.userInfo.avatarUrl}).then(()=>{
-                //     Taro.setStorage({key: 'nickname', data: ans.userInfo.nickName}).then(()=>{
-                //       Taro.setStorage({key: 'desc', data: '已成功授权'}).then(()=>{
-                //         // 登录成功并且设置缓存之后，重新加载页面
-                //         Taro.reLaunch({url: '/pages/more/more'}).then().then(()=>{
-                //           Taro.showToast({
-                //             title: '登录成功',
-                //             icon: 'none',
-                //             duration: 2000
-                //           })
-                //         })
-                //       })
-                //     })
-                //   })
-                // })
-              } else {
-                // 获取code失败
-                Taro.showToast({
-                  title: '登录失败',
-                  icon: 'none',
-                  duration: 2000
-                })
+                  }).catch(function (e) {
+                    console.log('e: ', e)
+                  })
+                } else {
+                  // 获取code失败
+                  Taro.showToast({
+                    title: '登录失败',
+                    icon: 'none',
+                    duration: 2000
+                  })
+                }
               }
-            }
-          })
+            })
+          }
         }
-      }
-    })
+      }).catch(function (e) {
+        console.log("check session: ", e);
+      })
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   render () {
@@ -192,7 +191,7 @@ export default class More extends Component {
       <View className='more'>
         <View className='user flex-wrp'>
           <View className='avatar flex-item'>
-            <Image className='userinfo-avatar' src={this.state.avatar} backgroundSize='cover'></Image>
+            <Image className='userinfo-avatar' src={this.state.avatar} backgroundSize='cover' />
           </View>
           <View className='user-info flex-item'>
             <Text className='userinfo-nickname'>{this.state.name}</Text>
@@ -202,7 +201,7 @@ export default class More extends Component {
         <View className='my'>
           <View className='my-item flex-wrp'>
             <View className='myitem-icon flex-item' >
-              <Image class='myitem-img' src={livePng}></Image>
+              <Image class='myitem-img' src={livePng} />
             </View>
             <View className='myitem-button flex-item'>
               <Button className='myitem-b' open-type='getUserInfo' onGetUserInfo={this.processInfo}>授权登录</Button>
@@ -211,16 +210,16 @@ export default class More extends Component {
 
           <View className='my-item flex-wrp'>
             <View className='myitem-icon flex-item' >
-              <Image class='myitem-img' src={starPng}></Image>
+              <Image class='myitem-img' src={starPng} />
             </View>
             <View className='myitem-button flex-item'>
-              <Button className='myitem-b'>我的收藏</Button>
+              <Button className='myitem-b' onClick={this.switchTo.bind(this, '/pages/index/index')}>我的收藏</Button>
             </View>
           </View>
 
           <View className='my-item flex-wrp'>
             <View className='myitem-icon flex-item' >
-              <Image class='myitem-img' src={bookPng}></Image>
+              <Image class='myitem-img' src={bookPng} />
             </View>
             <View className='myitem-button flex-item'>
               <Button className='myitem-b' onClick={this.navigateTo.bind(this, '/pages/about/about')}>关于开发者</Button>

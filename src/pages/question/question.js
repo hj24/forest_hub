@@ -11,13 +11,13 @@ import img5 from '../../asset/images/icon1.jpeg'
 export default class Question extends Component {
   config = {
     navigationBarTitleText: '问题'
-  }
+  };
   constructor() {
     super(...arguments)
   }
-  navigateTo(url) {
+  navigateTo = (url) => {
     Taro.navigateTo({url:url})
-  }
+  };
   render () {
     return (
         <View>
@@ -39,11 +39,11 @@ export default class Question extends Component {
                   <View className='que-follow'>
                       <View className='left'>
                           <View className='watch'>
-                              <Image src={img1}></Image>
+                              <Image src={img1} />
                               <Text>3316</Text>
                           </View>
                           <View className='comment'>
-                              <Image src={img2}></Image>
+                              <Image src={img2} />
                               <Text>27</Text>
                           </View>
                       </View>
@@ -54,11 +54,11 @@ export default class Question extends Component {
               </View>
               <View className='que-operate flex-wrp'>
                   <View className='invite flex-item'>
-                      <Image src={img3}></Image>
+                      <Image src={img3} />
                       <Text>邀请回答</Text>
                   </View>
                   <View className='write flex-item'>
-                      <Image src={img4}></Image>
+                      <Image src={img4} />
                       <Text>写回答</Text>
                   </View>
               </View>
@@ -68,7 +68,7 @@ export default class Question extends Component {
                   <View className='feed-source'>
                       <View>
                           <View className='avatar'>
-                              <Image src={img5}></Image>
+                              <Image src={img5} />
                           </View>
                           <Text className='answer-name'>Rebecca</Text>
                       </View>
@@ -96,7 +96,7 @@ export default class Question extends Component {
                   <View className='feed-source'>
                       <View>
                           <View className='avatar'>
-                              <Image src={img5}></Image>
+                              <Image src={img5} />
                           </View>
                           <Text className='answer-name'>Rebecca</Text>
                       </View>

@@ -4,150 +4,448 @@ import './index.scss'
 import Feed from '../../components/feed/feed'
 import searchPng from '../../asset/images/search.png'
 import lightingPng from '../../asset/images/lighting.png'
-import img4 from "../../asset/images/icon1.jpeg";
-import img5 from "../../asset/images/icon8.jpg";
-import img6 from "../../asset/images/icon9.jpeg";
+
 
 export default class Index extends Component {
   config = {
-    navigationBarTitleText: '首页'
-  }
+    navigationBarTitleText: '收藏'
+  };
   constructor() {
-    super(...arguments)
+    super(...arguments);
     this.state = {
-      loading:true,
-      list:[
-        {
-          'question_id': 1,
-          'answer_id': 3,
-          'feed_source_id': 23,
-          'feed_source_name': 'Rebecca1',
-          'feed_source_txt': '赞了回答1',
-          'feed_source_img': img4,
-          'question': '选择 Kindle 而不是纸质书的原因是什么？',
-          'answer_ctnt': '难道不明白纸质书更贵啊！！！ 若觉得kindle更贵，我觉得要么阅读量太少，那确实没有买kindle的必要。要么买的都是盗版的纸质书？我不清楚不加以评论。。。 另外，用kindle看小说的怎么真心不懂了...',
-          'good_num': '112',
-          'comment_num': '18'
-        },
-        {
-          'question_id': 2,
-          'answer_id': 25,
-          'feed_source_id': 24,
-          'feed_source_name': 'Alex2',
-          'feed_source_txt': '回答了问题2',
-          'feed_source_img': img5,
-          'question': '如何评价周杰伦的「中文歌才是最屌的」的言论？',
-          'answer_ctnt': '不知道题主是否是学音乐的。 音乐有公认的经典，也有明显的流行趋势没有错。但归根结底，音乐是一种艺术，艺术是很主观的东西。跟画作一个道理，毕加索是大家，但很多人看不懂他的话，甚至觉得很难看...',
-          'good_num': '112',
-          'comment_num': '18'
-        },
-        {
-          'question_id': 3,
-          'answer_id': 61,
-          'feed_source_id': 25,
-          'feed_source_name': 'George3',
-          'feed_source_txt': '赞了回答3',
-          'feed_source_img': img6,
-          'question': '气象铁塔的辐射大吗？',
-          'answer_ctnt': '我不知道那个铁塔的情况，不过气象铁塔上会有一些测太阳辐射的设备，如果说辐射的话，太阳辐射那么多，大家赶紧躲进地底下呀~~~~~要不然辐射量这么大，会变异的呀~~~~',
-          'good_num': '112',
-          'comment_num': '18'
-        },
-      ]
-    }
-
+      unauthored: true,
+      list:[],
+      searchmod: false,
+      searchph: '搜索论文名、主题或作者',
+      searchv: ''
+    };
   }
+
+  componentDidShow() {
+    this.clear();
+    var accessToken = Taro.getStorageSync('accessToken');
+    if (accessToken) {
+      this.setState({
+        unauthored: false
+      });
+      if (this.state.searchmod) {
+        return
+      }
+      if (this.state.list.length === 0) {
+        Taro.showLoading({ title: '加载中' });
+        Taro.request({
+          url: 'https://mambahj.com/favlist',
+          method: "GET",
+          header: {
+            'content-type': 'application/json',
+            'accessToken': accessToken,
+          }
+        }).then(res => {
+          Taro.hideLoading();
+          if (res.data["code"] === 24) {
+            // 如果需要更新，则更新token
+            if (res.data["tokentag"] === "yes") {
+              Taro.setStorage({
+                key: "accessToken",
+                data: res.data["accessToken"]
+              });
+            }
+            this.setState({
+              unauthored: false,
+              list: res.data["articles"]
+            });
+            // 更新页码，后续分页加载时需要
+            Taro.setStorage({
+              key: "favpage",
+              data: 1
+            });
+          }
+        })
+      }
+    } else {
+      this.setState({
+        unauthored: true
+      });
+      Taro.setStorage({
+        key: "favpage",
+        data: 1
+      });
+    }
+  }
+
+
   componentDidMount () {
     // 获取远程数据
-    //Taro.showLoading({ title: '加载中' })
-    // Taro.request({
-    //   url: 'https://easy-mock.com/mock/5b21d97f6b88957fa8a502f2/example/feed'
-    // }).then(res => {
-    //   Taro.hideLoading()
-    //   if (res.data.success) {
-    //     this.setState({
-    //       loading: false,
-    //       list: res.data.data
-    //     })
-    //   }
-    // })
-    this.setState({loading: false})
+    Taro.showLoading({ title: '加载中' });
+    var accessToken = Taro.getStorageSync('accessToken');
+    if (accessToken){
+      this.setState({
+        unauthored: false
+      });
+      Taro.request({
+        url: 'https://mambahj.com/favlist',
+        method: "GET",
+        header: {
+          'content-type': 'application/json',
+          'accessToken': accessToken,
+        }
+      }).then(res => {
+        Taro.hideLoading();
+        if (res.data["code"] === 24) {
+          // 如果需要更新，则更新token
+          if (res.data["tokentag"] === "yes") {
+            Taro.setStorage({
+              key: "accessToken",
+              data: res.data["accessToken"]
+            });
+          }
+          this.setState({
+            unauthored: false,
+            list: res.data["articles"]
+          });
+          // 更新页码，后续分页加载时需要
+          Taro.setStorage({
+            key: "favpage",
+            data: 1
+          });
+        }
+      })
+    } else {
+      Taro.hideLoading();
+      this.setState({
+        unauthored: true
+      });
+      Taro.showToast({
+        'title': '没有权限，请授权登录',
+        'icon': 'none'
+      });
+    }
   }
+
   updateList = () => {
-    if (this.state.loading) {
+    // 如果没有授权，执行不了更新操作
+    if (this.state.unauthored) {
       return
     }
-    // this.setState({loading: true})
-    // Taro.showLoading({title: '加载中'})
-    // Taro.request({
-    //   url: 'https://easy-mock.com/mock/5b21d97f6b88957fa8a502f2/example/feed'
-    // }).then(res => {
-    //   Taro.hideLoading()
-    //   if (res.data.success) {
-    //     this.setState({
-    //       loading:false,
-    //       list:res.data.data
-    //     })
-    //   }
-    // })
-    this.setState({loading: false})
-  }
+    var accessToken = Taro.getStorageSync('accessToken');
+    if (accessToken) {
+      if (this.state.searchmod === false) {
+        Taro.request({
+          url: 'https://mambahj.com/favlist',
+          method: "GET",
+          header: {
+            'content-type': 'application/json',
+            'accessToken': accessToken,
+          }
+        }).then(res => {
+          if (res.data["code"] === 24) {
+            // 如果需要更新，则更新token
+            if (res.data["tokentag"] === "yes") {
+              Taro.setStorage({
+                key: "accessToken",
+                data: res.data["accessToken"]
+              });
+            }
+            this.setState({
+              unauthored: false,
+              list: res.data["articles"]
+            });
+            // 更新页码，后续分页加载时需要
+            Taro.setStorage({
+              key: "favpage",
+              data: 1
+            });
+          }
+        });
+        this.setState({
+          unauthored: false
+        });
+      } else {
+        var sk = Taro.getStorageSync('searchkey');
+        Taro.request({
+          url: 'https://mambahj.com/favlist',
+          method: "POST",
+          header: {
+            'content-type': 'application/json',
+            'accessToken': accessToken,
+          },
+          data: {
+            'key': sk
+          }
+        }).then(res => {
+          if (res.data["code"] === 24) {
+            // 如果需要更新，则更新token
+            if (res.data["tokentag"] === "yes") {
+              Taro.setStorage({
+                key: "accessToken",
+                data: res.data["accessToken"]
+              });
+            }
+            this.setState({
+              list: res.data["articles"]
+            });
+            Taro.setStorageSync('searchpage', 1);
+          }
+        });
+        this.setState({
+          unauthored: false
+        });
+      }
+    }
+
+  };
+
   appendNextPageList = () => {
-    if (this.state.loading) {
+    if (this.state.unauthored) {
       return
     }
-    // this.setState({loading: true})
-    // Taro.showLoading({title: '加载中'})
-    // Taro.request({
-    //   url: 'https://easy-mock.com/mock/5b21d97f6b88957fa8a502f2/example/feed'
-    // }).then(res => {
-    //   Taro.hideLoading()
-    //   if (res.data.success) {
-    //     this.setState({
-    //       list: this.state.list.concat(res.data.data),
-    //       loading: false
-    //     })
-    //   }
-    // })
-    this.setState({loading: false})
-  }
+    var accessToken = Taro.getStorageSync('accessToken');
+    if (accessToken) {
+      //如果没有进入搜索模式
+      if (this.state.searchmod === false) {
+        var p = Taro.getStorageSync('favpage');
+        Taro.request({
+          url: 'https://mambahj.com/favlist?page=' + (p + 1),
+          method: "GET",
+          header: {
+            'content-type': 'application/json',
+            'accessToken': accessToken,
+          }
+        }).then(res => {
+          if (res.data["code"] === 24) {
+            // 如果需要更新，则更新token
+            if (res.data["tokentag"] === "yes") {
+              Taro.setStorage({
+                key: "accessToken",
+                data: res.data["accessToken"]
+              });
+            }
+            if (res.data["len"] === 0) {
+              Taro.showToast({
+                "title": "我真的一滴都不剩了",
+                "icon": "none"
+              });
+            } else {
+              this.setState({
+                unauthored: false,
+                list: this.state.list.concat(res.data["articles"])
+              });
+              // 更新页码，后续分页加载时需要
+              Taro.setStorage({
+                key: "favpage",
+                data: res.data["page"]
+              });
+            }
+          }
+        });
+        this.setState({
+          unauthored: false
+        });
+      } else {
+        var sp = Taro.getStorageSync('searchpage');
+        var sk = Taro.getStorageSync('searchkey');
+        Taro.request({
+          url: 'https://mambahj.com/favlist?page=' + (sp + 1),
+          method: "POST",
+          header: {
+            'content-type': 'application/json',
+            'accessToken': accessToken,
+          },
+          data: {
+            'key': sk
+          }
+        }).then(res => {
+          if (res.data["code"] === 24) {
+            // 如果需要更新，则更新token
+            if (res.data["tokentag"] === "yes") {
+              Taro.setStorage({
+                key: "accessToken",
+                data: res.data["accessToken"]
+              });
+            }
+            if (res.data["len"] === 0) {
+              Taro.showToast({
+                "title": "我真的一滴都不剩了",
+                "icon": "none"
+              });
+            } else {
+              this.setState({
+                unauthored: false,
+                list: this.state.list.concat(res.data["articles"])
+              });
+              // 更新页码，后续分页加载时需要
+              Taro.setStorage({
+                key: "searchpage",
+                data: res.data["page"]
+              });
+            }
+          }
+          if (res.data["code"] === 10) {
+            Taro.showToast({
+              'title': '真的没有了',
+              'icon': 'none'
+            });
+          }
+        });
+        this.setState({
+          unauthored: false
+        });
+      }
+    }
+
+  };
+
+  clearSearch = () => {
+    Taro.removeStorageSync('searchkey');
+    Taro.removeStorageSync('searchpage');
+    this.setState({
+      searchmod: false,
+    });
+  };
+
+  searchFav = (res) => {
+    // 进入搜索前，先清空上一次搜索的状态
+    this.clearSearch();
+    // 没有token，不可以搜索
+    var token = Taro.getStorageSync('accessToken');
+    if (token) {
+      //进行搜索时，页面切换到搜索模式
+      var key = res.detail.value;
+      //对输入长度进行校验
+      if (key.length === 0) {
+        // 输入长度为0时，默认为取消搜索
+        this.clearSearch();
+        this.updateList();
+        return
+      }
+      if (key.length > 100) {
+        Taro.showToast({
+          'title': '输入过长',
+          'icon': 'none'
+        });
+        return
+      }
+      Taro.request({
+        url: 'https://mambahj.com/favlist',
+        method: "POST",
+        header: {
+          'content-type': 'application/json',
+          'accessToken': token,
+        },
+        data: {
+          "key": key
+        }
+      }).then(ans => {
+        if (ans.statusCode !== 200) {
+          // 服务端错误，需要从搜索模式退出
+          Taro.showToast({
+            'title': '服务端错误',
+            'icon': 'none'
+          });
+          this.setState({
+            searchmod: false
+          });
+        } else {
+          if (ans.data["code"] === 10) {
+            Taro.showToast({
+              'title': '没有找到内容',
+              'icon': 'none'
+            });
+            if (ans.data["tokentag"] === "yes") {
+              Taro.setStorage({
+                key: "accessToken",
+                data: ans.data["accessToken"]
+              });
+            }
+            this.setState({
+              searchmod: false
+            });
+          }
+          if (ans.data["code"] === 24) {
+            if (ans.data["tokentag"] === "yes") {
+              Taro.setStorage({
+                key: "accessToken",
+                data: ans.data["accessToken"]
+              });
+            }
+            // 搜索成功
+            var sp = ans.data["page"];
+            Taro.setStorageSync('searchpage', sp);
+            Taro.setStorageSync('searchkey', key);
+            this.setState({
+              list: ans.data["articles"],
+              searchmod: true
+            });
+            Taro.showToast({
+              'title': '找到 ' + ans.data["articles"].length + ' 条信息'
+            });
+          }
+        }
+      })
+    } else {
+      Taro.showToast({
+        'title': '您未登录，不能进行搜索',
+        'icon': 'none'
+      });
+    }
+  };
+
+  clearInput = () => {
+    this.setState({
+      searchv: ''
+    })
+  };
+
+  clear = () => {
+    this.clearInput();
+    this.clearSearch();
+    this.updateList();
+  };
+
+  setInput = (e) => {
+    // 输入时把值赋给searchv，后续清空时使用
+    this.setState({
+      searchv: e.detail.value
+    });
+    return this.state.searchv
+  };
+
   render () {
     return (
         <View>
         <View className='search flex-wrp'>
           <View className='search-left flex-item'>
             <View className='flex-wrp'>
-              <View className='flex1'><Image src={searchPng}></Image></View>
-              <View className='flex6'><Input type='text' placeholder={'搜索论文名、主题或作者'} placeholderClass='search-placeholder' /></View>
+              <View className='flex1'><Image src={searchPng} /></View>
+              <View className='flex6'>
+                <Input type='text' placeholder={this.state.searchph}
+                  placeholderClass='search-placeholder' confirmType='go' onConfirm={e => this.searchFav(e)}
+                  value={this.state.searchv} onInput={this.setInput}
+                />
+              </View>
             </View>
           </View>
           <View className='search-right flex-item'>
-            <Image onClick={this.updateList} src={lightingPng}></Image>
+            <Image onClick={this.clear} src={lightingPng} />
           </View>
         </View>
-        <ScrollView className='container'
-          scrollY
-          scrollWithAnimation
-          scrollTop='0'
-          lowerThreshold='10'
-          upperThreshold='10'
-          style='height:300px'
-          onScrollToUpper={this.updateList}
-          onScrollToLower={this.appendNextPageList}
+        <ScrollView className='container' scrollY scrollWithAnimation scrollTop='0' lowerThreshold='10' upperThreshold='10'
+          style='height:300px' onScrollToUpper={this.updateList} onScrollToLower={this.appendNextPageList} enableBackToTop='true'
         >
         {
-          this.state.loading
-          ? <View className='txcenter'>加载中</View>
+          this.state.unauthored
+          ? <View className='txcenter'>未登录</View>
           : this.state.list.map((item, key) => {
             return <Feed
               key={key}
-              feedSourceImg={item.feed_source_img}
-              feedSourceName={item.feed_source_name}
-              feedSourceTxt={item.feed_source_txt}
-              question={item.question}
-              answerCtnt={item.good_num}
-              goodNum={item.comment_num}
-              commentNum={item.commentNum}
+              //feedSourceImg={item.feed_source_img}
+              feedSourceName={item.author ? item["author"].substring(0, 20) + " ...": ""}
+              //feedSourceTxt={item.feed_source_txt}
+              idx={item.id}
+              question={item.title}
+              goodNum={item["fav_num"]}
+              commentNum={item["date"]}
+              answerCtnt={item.expr ? item["expr"].substring(0, 200) : ""}
             />
           })
         }

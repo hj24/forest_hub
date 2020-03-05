@@ -89,7 +89,7 @@
   padding: 30px 40px;
   background: #ffffff;
   text,span{
-    font-size: 32px;
+    font-size: 28px;
     color: #454545;
     line-height: 44px;
   }
@@ -131,7 +131,7 @@
     flex: 5;
   }
   .operation{
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 0 0 0 60px;
     image, img {
       display: block;
@@ -150,4 +150,11 @@
     }
   }
 
+}
+
+.btn{
+  background: #ffffff;
+}
+.btn::after{
+  border: none;
 }

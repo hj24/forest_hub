@@ -11,6 +11,8 @@ import livePng from '../../asset/images/live.png'
 //import zhiPng from '../../asset/images/zhi.png'
 import default_avatar from '../../asset/images/default_avatar.jpeg'
 
+import api from '../../utils/api'
+
 
 export default class More extends Component {
   config = {
@@ -114,10 +116,10 @@ export default class More extends Component {
             Taro.login({
               success: function (res) {
                 if (res.code) {
-                  //console.log(res.code)
+                  console.log(res.code);
                   // 有code之后带着code和info信息去后端请求token
                   Taro.request({
-                    url: 'https://mambahj.com/login',
+                    url: api.login,
                     method: "POST",
                     data: {
                       "user_info": info.detail.userInfo,

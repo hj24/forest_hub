@@ -5,6 +5,8 @@ import Feed from '../../components/feed/feed'
 import searchPng from '../../asset/images/search.png'
 import lightingPng from '../../asset/images/lighting.png'
 
+import api from '../../utils/api'
+
 
 export default class Index extends Component {
   config = {
@@ -34,7 +36,7 @@ export default class Index extends Component {
       if (this.state.list.length === 0) {
         Taro.showLoading({ title: '加载中' });
         Taro.request({
-          url: 'https://mambahj.com/favlist',
+          url: api.fav,
           method: "GET",
           header: {
             'content-type': 'application/json',
@@ -83,7 +85,7 @@ export default class Index extends Component {
         unauthored: false
       });
       Taro.request({
-        url: 'https://mambahj.com/favlist',
+        url: api.fav,
         method: "GET",
         header: {
           'content-type': 'application/json',
@@ -131,7 +133,7 @@ export default class Index extends Component {
     if (accessToken) {
       if (this.state.searchmod === false) {
         Taro.request({
-          url: 'https://mambahj.com/favlist',
+          url: api.fav,
           method: "GET",
           header: {
             'content-type': 'application/json',
@@ -163,7 +165,7 @@ export default class Index extends Component {
       } else {
         var sk = Taro.getStorageSync('searchkey');
         Taro.request({
-          url: 'https://mambahj.com/favlist',
+          url: api.fav,
           method: "POST",
           header: {
             'content-type': 'application/json',
@@ -205,7 +207,7 @@ export default class Index extends Component {
       if (this.state.searchmod === false) {
         var p = Taro.getStorageSync('favpage');
         Taro.request({
-          url: 'https://mambahj.com/favlist?page=' + (p + 1),
+          url: api.fav + '?page=' + (p + 1),
           method: "GET",
           header: {
             'content-type': 'application/json',
@@ -245,7 +247,7 @@ export default class Index extends Component {
         var sp = Taro.getStorageSync('searchpage');
         var sk = Taro.getStorageSync('searchkey');
         Taro.request({
-          url: 'https://mambahj.com/favlist?page=' + (sp + 1),
+          url: api.fav + '?page=' + (sp + 1),
           method: "POST",
           header: {
             'content-type': 'application/json',
@@ -326,7 +328,7 @@ export default class Index extends Component {
         return
       }
       Taro.request({
-        url: 'https://mambahj.com/favlist',
+        url: api.fav,
         method: "POST",
         header: {
           'content-type': 'application/json',
@@ -429,8 +431,15 @@ export default class Index extends Component {
             <Image onClick={this.clear} src={lightingPng} />
           </View>
         </View>
-        <ScrollView className='container' scrollY scrollWithAnimation scrollTop='0' lowerThreshold='10' upperThreshold='10'
-          style='height:300px' onScrollToUpper={this.updateList} onScrollToLower={this.appendNextPageList} enableBackToTop='true'
+        <ScrollView
+          className='container'
+          scrollY scrollWithAnimation scrollTop='0'
+          lowerThreshold='10'
+          upperThreshold='10'
+          style='height:300px'
+          onScrollToUpper={this.updateList}
+          onScrollToLower={this.appendNextPageList}
+          enableBackToTop='true'
         >
         {
           this.state.unauthored

@@ -2,11 +2,12 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Image, Button } from '@tarojs/components'
 import './answer.scss'
 
-
 import img4 from '../../asset/images/heart2.png'
 import img5 from '../../asset/images/star2.png'
 import eye from '../../asset/images/eye.png'
 import faved from '../../asset/images/allread.png'
+
+import api from '../../utils/api'
 
 
 export default class Answer extends Component {
@@ -42,7 +43,7 @@ export default class Answer extends Component {
       var accessToken = Taro.getStorageSync('accessToken');
       if (accessToken){
         Taro.request({
-          url: 'https://mambahj.com/articles/' + idx,
+          url: api.articles + '/' + idx,
           method: "GET",
           header: {
             'content-type': 'application/json',
@@ -78,7 +79,7 @@ export default class Answer extends Component {
         });
       } else {
         Taro.request({
-          url: 'https://mambahj.com/articles/' + idx,
+          url: api.articles + '/' + idx,
           method: "GET"
         }).then((res) => {
           if (res.data["code"] === 24) {
@@ -118,7 +119,7 @@ export default class Answer extends Component {
         }
         // 把当前状态传过去，当前已收藏，则取消收藏
         Taro.request({
-          url: 'https://mambahj.com/articles/' + this.state.idx,
+          url: api.articles + '/' + this.state.idx,
           method: "POST",
           header: {
             'content-type': 'application/json',
@@ -136,10 +137,11 @@ export default class Answer extends Component {
             });
             return
           }
+          // 服务端 200
           if (res.data["tokentag"] === "yes") {
             Taro.setStorageSync('accessToken', res.data["accessToken"]);
           }
-          if (res.data["code"] === 24) {
+          if (res.data["code"] === 24 || res.data["code"] === 0) {
             if (res.data["favtag"] === "yes") {
               this.setState({
                 favtag: true,
@@ -170,7 +172,7 @@ export default class Answer extends Component {
                 <Text className='question-title'>{this.state.title}</Text>
             </View>
             <View className='answerer-wrp'>
-              <View className='bg-half'></View>
+              <View className='bg-half' />
               <View className='answerer flex-wrp'>
                 {/*<View className='avatar flex-item'>*/}
                 {/*  <Image src={img7}></Image>*/}

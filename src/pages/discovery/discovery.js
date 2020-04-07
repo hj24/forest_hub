@@ -10,6 +10,9 @@ import img7 from '../../asset/images/24280.jpg'
 import img8 from '../../asset/images/mu2.jpeg'
 import img9 from '../../asset/images/mu1.jpeg'
 
+import api from '../../utils/api'
+
+
 export default class Discovery extends Component {
   config = {
     navigationBarTitleText: '首页'
@@ -36,10 +39,11 @@ export default class Discovery extends Component {
     Taro.showLoading({
       'title': '加载中'
     });
+    // 初始化页面加载时，异步加载两个tag的首页，在loacl storage里写上初始的page数为第一页 即 1
     function init(obj) {
       var r1 = new Promise(function (resolve, reject) {
         Taro.request({
-          url: 'https://mambahj.com/articles?subject=forestry',
+          url: api.articles + '?subject=forestry',
           success: function (res) {
             obj.setState({
               feed: res.data["articles"]
@@ -58,7 +62,7 @@ export default class Discovery extends Component {
       });
       var r2 = new Promise(function (resolve, reject) {
         Taro.request({
-          url: 'https://mambahj.com/articles?subject=stock%20raising',
+          url: api.articles + '?subject=stock%20raising',
           success: function (res) {
             obj.setState({
               feed2: res.data["articles"]
@@ -79,6 +83,7 @@ export default class Discovery extends Component {
   }
 
   update = () => {
+    // 点击上面的首页，需要重新刷新回首页，别忘了重新写本地存储的page
     function _update(obj, url, idx) {
       Taro.request({
         url: url,
@@ -100,11 +105,11 @@ export default class Discovery extends Component {
       })
     }
     if (this.state.currentNavtab === 0) {
-      _update(this, 'https://mambahj.com/articles?subject=forestry', 0);
+      _update(this, api.articles + '?subject=forestry', 0);
       Taro.setStorage({key: "mainpage0", data: 1})
     }
     if (this.state.currentNavtab === 1) {
-      _update(this, 'https://mambahj.com/articles?subject=stock%20raising', 1);
+      _update(this, api.articles + '?subject=stock%20raising', 1);
       Taro.setStorage({key: "mainpage1", data: 1})
     }
   };
@@ -112,7 +117,7 @@ export default class Discovery extends Component {
   appendNextPage = () => {
     if (this.state.currentNavtab === 0) {
       var p1 = Taro.getStorageSync('mainpage0');
-      var _url = 'https://mambahj.com/articles?subject=forestry&page=' + (parseInt(p1) + 1);
+      var _url = api.articles + '?subject=forestry&page=' + (parseInt(p1) + 1);
       Taro.request({
         url: _url,
         method: "GET",
@@ -147,7 +152,7 @@ export default class Discovery extends Component {
 
     if (this.state.currentNavtab === 1) {
       var p2 = Taro.getStorageSync('mainpage1');
-      var __url = 'https://mambahj.com/articles?subject=stock%20raising&page=' + (parseInt(p2) + 1);
+      var __url = api.articles + '?subject=stock%20raising&page=' + (parseInt(p2) + 1);
       Taro.request({
         url: __url,
         method: "GET",
@@ -195,7 +200,10 @@ export default class Discovery extends Component {
         {
           this.state.navTab.map((item, index) => {
             return (
-              <View className={this.state.currentNavtab === index ? 'toptab flex-item active' : 'toptab flex-item'} key={index} onClick={this.switchTab.bind(this,index)}>
+              <View
+                className={this.state.currentNavtab === index ? 'toptab flex-item active' : 'toptab flex-item'}
+                key={index} onClick={this.switchTab.bind(this,index)}
+              >
                 {item}
               </View>
             )
@@ -203,8 +211,12 @@ export default class Discovery extends Component {
         }
         </View>
 
-        <ScrollView scroll-y className='container discovery withtab' enableFlex='true'
-          onScrollToUpper={this.update} onScrollToLower={this.appendNextPage} enableBackToTop='true'
+        <ScrollView
+          scroll-y className='container discovery withtab'
+          enableFlex='true'
+          onScrollToUpper={this.update}
+          onScrollToLower={this.appendNextPage}
+          enableBackToTop='true'
         >
           <View className='ctnt0' hidden={this.state.currentNavtab !== 0}>
               <Swiper className='activity' indicatorDots='true' autoplay='true' interval='5000' duration='500'>

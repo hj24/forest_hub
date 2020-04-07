@@ -7,14 +7,15 @@ import img8 from '../../asset/images/default_avatar.jpeg'
 export default class Answer extends Component {
   config = {
     navigationBarTitleText: '关于开发者'
-  }
+  };
   constructor() {
     super(...arguments)
   }
 
-  navigateTo(url) {
+  navigateTo = (url) => {
     Taro.navigateTo({ url: url })
-  }
+  };
+
   render() {
     return (
       <View className='answer_container'>
@@ -22,10 +23,10 @@ export default class Answer extends Component {
           <Text className='question-title'>关于这个小程序</Text>
         </View>
         <View className='answerer-wrp'>
-          <View className='bg-half'></View>
+          <View className='bg-half' />
           <View className='answerer flex-wrp'>
             <View className='avatar flex-item'>
-              <Image src={img8}></Image>
+              <Image src={img8} />
             </View>
             <View className='answerer-info flex-item'>
               <Text className='answerer-name'>开发者: 黄健</Text>
